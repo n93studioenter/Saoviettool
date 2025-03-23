@@ -66,7 +66,9 @@
             materialListView1.BackColor = Color.FromArgb(255, 255, 255);
             materialListView1.BorderStyle = BorderStyle.None;
             materialListView1.Depth = 0;
+            materialListView1.Font = new Font("Segoe UI", 11F);
             materialListView1.FullRowSelect = true;
+            materialListView1.HeaderStyle = ColumnHeaderStyle.Nonclickable;
             materialListView1.Location = new Point(3, 245);
             materialListView1.MinimumSize = new Size(200, 100);
             materialListView1.MouseLocation = new Point(-1, -1);
