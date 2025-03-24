@@ -38,6 +38,7 @@
             materialLabel3 = new MaterialSkin.Controls.MaterialLabel();
             btnLoc = new MaterialSkin.Controls.MaterialButton();
             panel1 = new Panel();
+            btnImport = new MaterialSkin.Controls.MaterialButton();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -133,7 +134,7 @@
             materialComboBox1.IntegralHeight = false;
             materialComboBox1.ItemHeight = 43;
             materialComboBox1.Items.AddRange(new object[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" });
-            materialComboBox1.Location = new Point(482, 95);
+            materialComboBox1.Location = new Point(313, 92);
             materialComboBox1.MaxDropDownItems = 4;
             materialComboBox1.MouseState = MaterialSkin.MouseState.OUT;
             materialComboBox1.Name = "materialComboBox1";
@@ -157,7 +158,7 @@
             materialComboBox2.IntegralHeight = false;
             materialComboBox2.ItemHeight = 43;
             materialComboBox2.Items.AddRange(new object[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" });
-            materialComboBox2.Location = new Point(864, 95);
+            materialComboBox2.Location = new Point(695, 92);
             materialComboBox2.MaxDropDownItems = 4;
             materialComboBox2.MouseState = MaterialSkin.MouseState.OUT;
             materialComboBox2.Name = "materialComboBox2";
@@ -171,7 +172,7 @@
             materialLabel2.AutoSize = true;
             materialLabel2.Depth = 0;
             materialLabel2.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialLabel2.Location = new Point(392, 112);
+            materialLabel2.Location = new Point(223, 109);
             materialLabel2.MouseState = MaterialSkin.MouseState.HOVER;
             materialLabel2.Name = "materialLabel2";
             materialLabel2.Size = new Size(66, 19);
@@ -184,7 +185,7 @@
             materialLabel3.AutoSize = true;
             materialLabel3.Depth = 0;
             materialLabel3.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialLabel3.Location = new Point(769, 112);
+            materialLabel3.Location = new Point(600, 109);
             materialLabel3.MouseState = MaterialSkin.MouseState.HOVER;
             materialLabel3.Name = "materialLabel3";
             materialLabel3.Size = new Size(74, 19);
@@ -200,7 +201,7 @@
             btnLoc.Depth = 0;
             btnLoc.HighEmphasis = true;
             btnLoc.Icon = null;
-            btnLoc.Location = new Point(1102, 95);
+            btnLoc.Location = new Point(933, 92);
             btnLoc.Margin = new Padding(4, 6, 4, 6);
             btnLoc.MouseState = MaterialSkin.MouseState.HOVER;
             btnLoc.Name = "btnLoc";
@@ -215,6 +216,7 @@
             // panel1
             // 
             panel1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            panel1.Controls.Add(btnImport);
             panel1.Controls.Add(btnLoc);
             panel1.Controls.Add(txtPath);
             panel1.Controls.Add(materialLabel3);
@@ -227,6 +229,29 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(1270, 172);
             panel1.TabIndex = 9;
+            // 
+            // btnImport
+            // 
+            btnImport.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnImport.AutoSize = false;
+            btnImport.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            btnImport.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            btnImport.Depth = 0;
+            btnImport.HighEmphasis = true;
+            btnImport.Icon = null;
+            btnImport.Location = new Point(1102, 92);
+            btnImport.Margin = new Padding(4, 6, 4, 6);
+            btnImport.MouseState = MaterialSkin.MouseState.HOVER;
+            btnImport.Name = "btnImport";
+            btnImport.NoAccentTextColor = Color.Empty;
+            btnImport.RightToLeft = RightToLeft.No;
+            btnImport.Size = new Size(154, 48);
+            btnImport.TabIndex = 9;
+            btnImport.Text = "Import";
+            btnImport.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            btnImport.UseAccentColor = false;
+            btnImport.UseVisualStyleBackColor = true;
+            btnImport.Click += btnImport_Click;
             // 
             // frmMain
             // 
@@ -259,5 +284,6 @@
         private MaterialSkin.Controls.MaterialLabel materialLabel3;
         private MaterialSkin.Controls.MaterialButton btnLoc;
         private Panel panel1;
+        private MaterialSkin.Controls.MaterialButton btnImport;
     }
 }

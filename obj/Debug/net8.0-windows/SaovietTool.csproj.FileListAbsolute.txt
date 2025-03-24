@@ -31,3 +31,4 @@ C:\TCP\Saoviet\SourceTool\SaovietTool\SaovietTool\obj\Debug\net8.0-windows\Saovi
 C:\TCP\Saoviet\SourceTool\SaovietTool\SaovietTool\obj\Debug\net8.0-windows\ref\SaovietTool.dll
 C:\TCP\Saoviet\SourceTool\SaovietTool\SaovietTool\obj\Debug\net8.0-windows\SaovietTool.frmMain.resources
 C:\TCP\Saoviet\SourceTool\SaovietTool\SaovietTool\obj\Debug\net8.0-windows\SaovietTool.sourcelink.json
+C:\TCP\Saoviet\SourceTool\SaovietTool\SaovietTool\obj\Debug\net8.0-windows\SaovietTool.Properties.Resources.resources

@@ -32,7 +32,9 @@ namespace SaovietTool
             public int TKNo { get; set; }
             public int TkThue { get; set; }
             public string Mst { get; set; }
-            public FileImport(string shdon, DateTime nlap, string ten, string noidung, int tkno, int tkco,  int tkthue, string mst)
+            public double TongTien { get; set; }
+            public int Vat { get; set; }
+            public FileImport(string shdon, DateTime nlap, string ten, string noidung, int tkno, int tkco, int tkthue, string mst, double tongTien, int vat)
             {
                 SHDon = shdon;
                 NLap = nlap;
@@ -42,6 +44,8 @@ namespace SaovietTool
                 TKNo = tkno;
                 TkThue = tkthue;
                 Mst = mst;
+                TongTien = tongTien;
+                Vat = vat;
             }
         }
         private BindingList<FileImport> people = new BindingList<FileImport>();
@@ -81,6 +85,30 @@ namespace SaovietTool
 
             return dataTable; // Trả về DataTable chứa dữ liệu
         }
+        private int ExecuteQueryResult(string query, params OleDbParameter[] parameters)
+        {
+            DataTable dataTable = new DataTable();
+
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
+            {
+                connection.Open();
+                Console.WriteLine("Kết nối đến cơ sở dữ liệu thành công!");
+
+                using (OleDbCommand command = new OleDbCommand(query, connection))
+                {
+                    // Thêm các tham số vào command
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+
+                    int rowsAffected = command.ExecuteNonQuery(); // Thực thi câu lệnh
+                    return rowsAffected;
+                }
+            }
+
+            return -1;
+        }
         private void LoadXmlFiles(string path)
         {
             // Kiểm tra xem thư mục có tồn tại không
@@ -104,6 +132,7 @@ namespace SaovietTool
                     // Lấy phần tử <NDHDon>
                     XmlNode ndhDonNode = root.SelectSingleNode("//NDHDon");
                     XmlNode nTTChungNode = root.SelectSingleNode("//TTChung");
+                    XmlNode nTTThanToan= root.SelectSingleNode("//LTSuat");
                     string SHDon = "";
                     string ten = "";
                     string mst = "";
@@ -111,6 +140,8 @@ namespace SaovietTool
                     int TkCo = 0;
                     int TkNo = 0;
                     int TkThue = 0;
+                    int Vat = 0;
+                    double Thanhtien = 0;
                     string diengiai = "";
                     DateTime NLap = new DateTime();
                     if (nTTChungNode != null)
@@ -125,6 +156,8 @@ namespace SaovietTool
                         ten = nBanNode.SelectSingleNode("Ten")?.InnerText;
                         mst = nBanNode.SelectSingleNode("MST")?.InnerText;
                     }
+                    Vat= int.Parse(nTTThanToan.SelectSingleNode("TSuat").InnerText.Replace("%",""));
+                    Thanhtien = double.Parse(nTTThanToan.SelectSingleNode("ThTien").InnerText);
                     string query = @" SELECT TOP 1 *  FROM KhachHang AS kh  
 INNER JOIN HoaDon AS hd ON kh.Maso = hd.MaKhachHang    
 WHERE kh.MST = ?  
@@ -143,12 +176,13 @@ ORDER BY  MaSo DESC";
                         {
                             if (index == 0)
                             {
-                                TkThue  = int.Parse(row["MaTKNo"].ToString());  // Giả sử có cột "MaSo"; 
+                                TkThue = int.Parse(row["MaTKNo"].ToString());  // Giả sử có cột "MaSo"; 
                             }
                             if (index == 1)
                             {
                                 TkNo = int.Parse(row["MaTKNo"].ToString());  // Giả sử có cột "MaSo"; 
                                 TkCo = int.Parse(row["MaTKCo"].ToString());  // Giả sử có cột "MaSo"; 
+                                diengiai = Helper.ConvertVniToUnicode(row["DienGiai"].ToString());
                             }
                             // Lấy giá trị từ cột cụ thể trong hàng hiện tại
 
@@ -158,13 +192,18 @@ ORDER BY  MaSo DESC";
                     // Tra cứu từ bảng HeThongTK
                     query = @"Select   * from HeThongTK where MaTC = ?";
                     result = ExecuteQuery(query, new OleDbParameter("?", TkNo));
-                    TkNo= int.Parse(result.Rows[0]["SoHieu"].ToString());
+                    TkNo = int.Parse(result.Rows[0]["SoHieu"].ToString());
 
                     query = @"Select   * from HeThongTK where MaTC = ?";
                     result = ExecuteQuery(query, new OleDbParameter("?", TkCo));
                     TkCo = int.Parse(result.Rows[0]["SoHieu"].ToString());
 
-                    people.Add(new FileImport(SHDon, NLap, ten, diengiai, TkNo, TkCo, TkThue, mst));
+                    query = @"Select   * from HeThongTK where MaTC = ?";
+                    result = ExecuteQuery(query, new OleDbParameter("?", TkThue));
+                    TkThue = int.Parse(result.Rows[0]["SoHieu"].ToString());
+
+                    people.Add(new FileImport(SHDon, NLap, ten, diengiai, TkNo, TkCo, TkThue, mst,Thanhtien, Vat));
+
                 }
             }
             else
@@ -182,7 +221,8 @@ ORDER BY  MaSo DESC";
                     var item = new ListViewItem(FileImport.SHDon);
                     item.SubItems.Add(FileImport.NLap.ToShortDateString());
                     item.SubItems.Add(FileImport.Ten + " | " + FileImport.Mst);
-                    item.SubItems.Add("Nội dung thanh toán chi phí");
+                    item.SubItems.Add(FileImport.TongTien.ToString());
+                    item.SubItems.Add(FileImport.Noidung);
                     item.SubItems.Add(FileImport.TKNo.ToString());
                     item.SubItems.Add(FileImport.TKCo.ToString());
                     materialListView1.Items.Add(item);
@@ -237,7 +277,8 @@ ORDER BY  MaSo DESC";
             }
         }
         private void frmMain_Load(object sender, EventArgs e)
-        {
+        { 
+
             InitDB();
             txtPath.Text = savedPath;
             InitializeListView();
@@ -252,6 +293,7 @@ ORDER BY  MaSo DESC";
             materialListView1.Columns.Add("Số hóa đơn", -2);
             materialListView1.Columns.Add("Ngày lập", -2);
             materialListView1.Columns.Add("Tên công ty", -2);
+            materialListView1.Columns.Add("Tổng tiền", -2);
             materialListView1.Columns.Add("Nội dung", -2);
             materialListView1.Columns.Add("TK nợ", -2);
             materialListView1.Columns.Add("TK có", -2);
@@ -263,9 +305,10 @@ ORDER BY  MaSo DESC";
             materialListView1.Columns[0].Width = (int)(totalWidth * 0.1); // 40% chiều rộng
             materialListView1.Columns[1].Width = (int)(totalWidth * 0.1); // 30% chiều rộng
             materialListView1.Columns[2].Width = (int)(totalWidth * 0.4); // 30% chiều rộng
-            materialListView1.Columns[3].Width = (int)(totalWidth * 0.2); // 30% chiều rộng
+            materialListView1.Columns[3].Width = (int)(totalWidth * 0.1); // 30% chiều rộng
             materialListView1.Columns[4].Width = (int)(totalWidth * 0.1); // 30% chiều rộng
             materialListView1.Columns[5].Width = (int)(totalWidth * 0.1); // 30% chiều rộng
+            materialListView1.Columns[6].Width = (int)(totalWidth * 0.1); // 30% chiều rộng
         }
         private void materialListView1_MouseClick(object sender, MouseEventArgs e)
         {
@@ -311,13 +354,13 @@ ORDER BY  MaSo DESC";
                     var FileImport = people[rowIndex];
                     switch (colIndex)
                     {
-                        case 3:
+                        case 4:
                             FileImport.Noidung = newValue;
                             break;
-                        case 4:
+                        case 5:
                             FileImport.TKNo = int.Parse(newValue);
                             break;
-                        case 5:
+                        case 6:
                             FileImport.TKCo = int.Parse(newValue);
                             break;
                     }
@@ -355,6 +398,52 @@ ORDER BY  MaSo DESC";
                     // MessageBox.Show("Không có thư mục nào được chọn.");
                 }
             }
+        }
+
+        private void btnImport_Click(object sender, EventArgs e)
+        {
+            foreach (var item in people)
+            {
+                // Câu truy vấn SQL với các tham số được đặt tên rõ ràng
+                string query = @"
+        INSERT INTO tbImport (SHDon, NLap, Ten, Noidung, TKCo, TKNo, TkThue, Mst, Status, Ngaytao,TongTien,Vat)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+
+                // Chuyển đổi Unicode sang VNI (nếu cần)
+                string newTen = Helper.ConvertUnicodeToVni(item.Ten);
+                string newNoidung = Helper.ConvertUnicodeToVni(item.Noidung);
+
+                // Khai báo mảng tham số với đủ 10 tham số
+                OleDbParameter[] parameters = new OleDbParameter[]
+                {
+        new OleDbParameter("?", item.SHDon),
+        new OleDbParameter("?", item.NLap),
+        new OleDbParameter("?", newTen),
+        new OleDbParameter("?", newNoidung),
+        new OleDbParameter("?", item.TKCo),
+        new OleDbParameter("?", item.TKNo),
+        new OleDbParameter("?", item.TkThue),
+        new OleDbParameter("?", item.Mst),
+        new OleDbParameter("?","0"),
+        new OleDbParameter("?",DateTime.Now.ToShortDateString()),
+         new OleDbParameter("?",item.TongTien.ToString()),
+          new OleDbParameter("?",item.Vat.ToString())
+                };
+
+                // Thực thi truy vấn và lấy kết quả
+                int a = ExecuteQueryResult(query, parameters);
+
+                // Kiểm tra kết quả
+                if (a > 0)
+                {
+                    Console.WriteLine("Thêm dữ liệu thành công!");
+                }
+                else
+                {
+                    Console.WriteLine("Thêm dữ liệu thất bại.");
+                }
+            } 
+
         }
     }
 }
