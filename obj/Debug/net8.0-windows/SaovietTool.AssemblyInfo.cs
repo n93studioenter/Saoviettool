@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SaovietTool")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0638ac5db464eaceb12babf52c883f2d5eda4a09")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+61174d3d68012d6094c6245c4617e69a86a8f444")]
 [assembly: System.Reflection.AssemblyProductAttribute("SaovietTool")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SaovietTool")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
